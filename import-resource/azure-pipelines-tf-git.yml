@@ -1,0 +1,72 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger: none
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+ - group: TF-GIT-VAR
+ - name: ARM_CLIENT_SECRET
+   value: $(ARM-CLIENT-SECRET)
+ - name: config
+   value: $[variables['action']]
+
+stages:
+  - stage: Planconfig
+    condition: eq(variables.config,'plan')
+    jobs:  
+      - job: planconfig
+        steps:
+        - script: |
+            az login --service-principal -u $(ARM_CLIENT_ID) -p=$(ARM_CLIENT_SECRET) --tenant $(ARM_TENANT_ID)
+          displayName: 'loging with service principal'
+        - script: |
+            wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+            echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+            sudo apt update && sudo apt install terraform
+        - script: |
+            export ARM_CLIENT_SECRET=$(ARM-CLIENT-SECRET)
+            cd terraformgit
+            terraform init
+            terraform plan
+
+  - stage: Applyconfig
+    condition: eq(variables.config,'apply')
+    jobs:
+      - job: applyconfig
+        steps:
+        - script: |
+            az login --service-principal -u $(ARM_CLIENT_ID) -p=$(ARM_CLIENT_SECRET) --tenant $(ARM_TENANT_ID)
+          displayName: 'loging with service principal'
+        - script: |
+            wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+            echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+            sudo apt update && sudo apt install terraform
+        - script: |
+            export ARM_CLIENT_SECRET=$(ARM-CLIENT-SECRET)
+            cd terraformgit
+            terraform init
+            terraform apply -auto-approve
+
+  - stage: importconfig
+    condition: eq(variables.config,'import')
+    jobs:
+      - job: importconfig
+        steps:
+        - script: |
+            az login --service-principal -u $(ARM_CLIENT_ID) -p=$(ARM_CLIENT_SECRET) --tenant $(ARM_TENANT_ID)
+          displayName: 'loging with service principal'
+        - script: |
+            wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+            echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+            sudo apt update && sudo apt install terraform
+        - script: |
+            export ARM_CLIENT_SECRET=$(ARM-CLIENT-SECRET)
+            cd terraformgit
+            terraform init
+            terraform import $(tfconfigname) $(azresourceID)
+            terraform plan
