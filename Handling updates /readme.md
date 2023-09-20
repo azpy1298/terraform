@@ -1,7 +1,8 @@
-Handling changes to the resource
+#Handling changes to the resource
 
-1. Handling Changes that has been made to the resource via portal
-2. Handling Changes that has been made to the resource via config files
+## 1. Handling Changes that has been made to the resource via portal
+## 2. Handling Changes that has been made to the resource via config files
+## 3. Ignore the certain changes 
 
 comparing cmd:
 State-remote  => tf plan -refresh-only
@@ -9,7 +10,7 @@ Config-remote => tf plan
 
 -----------------------------------------
 
-1. Handling Changes that has been made to the resource via portal
+## 1. Handling Changes that has been made to the resource via portal
 
 Run tf plan
 
@@ -24,12 +25,27 @@ When changes to need to reflect in config file:
 		can be added in config file > add in the config file > run tf plan > tf apply to apply config to state file 
 		Can be removed in portal > go to portal remove the field > run tf plan should be ok > no need to run apply because changes has been reverted, state file remains the same
 
-2. Handling Changes that has been made to the resource via config files
+## 2. Handling Changes that has been made to the resource via config files
 Normal flow
 
 Run tf plan
 Run tf apply
 
+---------------------------------------------
+
+## 3. Ignore the certain changes
+```
+  resource "azurerm_resource_group" "basics" {
+  name     = var.resource_group_name
+  location = var.location
+
+  lifecycle {
+    ignore_changes = [
+      tags,
+   ]
+  }
+}
+```
 
 
 
