@@ -24,6 +24,15 @@ variables:
 export ARM_CLIENT_SECRET=$(ARM-CLIENT-SECRET)
 
 
+variables:
+
+![image](https://github.com/azpy1298/terraform/assets/133846787/e31f8dcb-213d-424a-96c8-f560444aba28)
+
+
+![image](https://github.com/azpy1298/terraform/assets/133846787/f99edbb6-25c8-412f-bb19-95dc72a45e28)
+
+
+
 
 
 
