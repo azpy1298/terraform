@@ -23,9 +23,6 @@ When changes to need to reflect in config file:
   ( - ) Field added in portal:
 		can be added in config file > add in the config file > run tf plan > tf apply to apply config to state file 
 		Can be removed in portal > go to portal remove the field > run tf plan should be ok > no need to run apply because changes has been reverted, state file remains the same
-         
-
-tf plan -refresh-only > 
 
 2. Handling Changes that has been made to the resource via config files
 Normal flow
